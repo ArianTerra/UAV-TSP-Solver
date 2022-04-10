@@ -1,12 +1,11 @@
 package com.epsilonlabs.uavpathcalculator.main
 
 import android.graphics.Color
-import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import com.epsilonlabs.uavpathcalculator.R
+import com.epsilonlabs.uavpathcalculator.database.UAVDatabase
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -25,6 +24,8 @@ import com.nambimobile.widgets.efab.FabOption
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
     private val TAG = "MainActivity"
+    private lateinit var db : UAVDatabase
+
     private lateinit var map: GoogleMap
     private lateinit var binding: ActivityMapsBinding
     //buttons
@@ -49,6 +50,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+        //DB init
+        db = UAVDatabase.getInstance(this)
 
         //get controls
         addDefault = findViewById(R.id.fab_add_node)
@@ -108,6 +111,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             } else {
                 drawTSP()
             }
+            val test = db.UAVDao().getUAV()[0].name
+            if (test != null) {
+                showToast(test)
+            }
         }
     }
 
@@ -136,7 +143,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 if (startNode == null) {
                     addStartNode(it)
                 } else {
-                    startNode!!.position = it;
+                    startNode!!.position = it
                     showToast("Moving start node...")
                 }
 
@@ -147,8 +154,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                     showToast("Creating start node...")
                 } else {
                     val marker = map.addMarker(MarkerOptions().position(it))
-                    marker.tag = NodeType.DEFAULT
-                    allMarkers.add(marker)
+                    if (marker != null) {
+                        marker.tag = NodeType.DEFAULT
+                    }
+                    if (marker != null) {
+                        allMarkers.add(marker)
+                    }
                 }
             }
             else -> {
@@ -164,8 +175,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
             )
         )
-        marker.tag = NodeType.START
-        allMarkers.add(marker)
+        marker?.tag = NodeType.START
+        if (marker != null) {
+            allMarkers.add(marker)
+        }
         startNode = marker
     }
 
