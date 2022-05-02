@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class UAV(
+data class Uav(
     @PrimaryKey
     val id : Int,
     @ColumnInfo(name = "name")

@@ -1,4 +1,4 @@
-package com.epsilonlabs.uavpathcalculator.main
+package com.epsilonlabs.uavpathcalculator.activities.main
 
 enum class EditorState {
     DEFAULT, // default state, do nothing

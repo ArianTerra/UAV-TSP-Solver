@@ -1,17 +1,19 @@
-package com.epsilonlabs.uavpathcalculator.main
+package com.epsilonlabs.uavpathcalculator.activities.main
 
 import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import com.epsilonlabs.uavpathcalculator.R
-import com.epsilonlabs.uavpathcalculator.database.UAVDatabase
-
+import com.epsilonlabs.uavpathcalculator.database.UavApplication
+import com.epsilonlabs.uavpathcalculator.database.UavViewModel
+import com.epsilonlabs.uavpathcalculator.database.UavViewModelFactory
+import com.epsilonlabs.uavpathcalculator.databinding.ActivityMapsBinding
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.epsilonlabs.uavpathcalculator.databinding.ActivityMapsBinding
 import com.google.android.gms.maps.model.*
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.nambimobile.widgets.efab.FabOption
@@ -24,7 +26,9 @@ import com.nambimobile.widgets.efab.FabOption
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
     private val TAG = "MainActivity"
-    private lateinit var db : UAVDatabase
+    private val uavViewModel: UavViewModel by viewModels {
+        UavViewModelFactory((application as UavApplication).repository)
+    }
 
     private lateinit var map: GoogleMap
     private lateinit var binding: ActivityMapsBinding
@@ -50,8 +54,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-        //DB init
-        db = UAVDatabase.getInstance(this)
+
 
         //get controls
         addDefault = findViewById(R.id.fab_add_node)
@@ -76,6 +79,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         remove.setOnClickListener {
             editorState = EditorState.REMOVE
         }
+
+
 
     }
 
@@ -111,10 +116,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             } else {
                 drawTSP()
             }
-            val test = db.UAVDao().getUAV()[0].name
-            if (test != null) {
-                showToast(test)
-            }
+
+
         }
     }
 
