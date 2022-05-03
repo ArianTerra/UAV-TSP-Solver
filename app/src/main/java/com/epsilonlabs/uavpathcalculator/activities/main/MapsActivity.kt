@@ -1,15 +1,13 @@
 package com.epsilonlabs.uavpathcalculator.activities.main
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.epsilonlabs.uavpathcalculator.R
-import com.epsilonlabs.uavpathcalculator.database.UavApplication
-import com.epsilonlabs.uavpathcalculator.database.UavViewModel
-import com.epsilonlabs.uavpathcalculator.database.UavViewModelFactory
+import com.epsilonlabs.uavpathcalculator.activities.result.ResultActivity
 import com.epsilonlabs.uavpathcalculator.databinding.ActivityMapsBinding
+import com.epsilonlabs.uavpathcalculator.utils.SimpleToast
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -26,9 +24,6 @@ import com.nambimobile.widgets.efab.FabOption
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
     private val TAG = "MainActivity"
-    private val uavViewModel: UavViewModel by viewModels {
-        UavViewModelFactory((application as UavApplication).repository)
-    }
 
     private lateinit var map: GoogleMap
     private lateinit var binding: ActivityMapsBinding
@@ -112,12 +107,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
         compute.setOnClickListener {
             if(allMarkers.size < 3) {
-                showToast("Add more markers!")
+                SimpleToast.show(this, "Add more markers!")
             } else {
                 drawTSP()
             }
-
-
+            //todo launch after
+            val intent = Intent(this@MapsActivity, ResultActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -147,14 +143,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                     addStartNode(it)
                 } else {
                     startNode!!.position = it
-                    showToast("Moving start node...")
+                    SimpleToast.show(this, "Moving start node...")
                 }
 
             }
             EditorState.ADD_NODE -> {
                 if(startNode == null) {
                     addStartNode(it)
-                    showToast("Creating start node...")
+                    SimpleToast.show(this, "Creating start node...")
                 } else {
                     val marker = map.addMarker(MarkerOptions().position(it))
                     if (marker != null) {
@@ -188,17 +184,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     override fun onMarkerClick(marker: Marker): Boolean {
         if (editorState == EditorState.REMOVE) {
             if(marker.tag == NodeType.START) {
-                showToast("Can't delete start node")
+                SimpleToast.show(this,"Can't delete start node")
             } else {
                 allMarkers.remove(marker)
                 marker.remove()
-                showToast("Marker deleted")
+                SimpleToast.show(this,"Marker deleted")
             }
         }
         return true
-    }
-
-    private fun showToast(string: String) {
-        Toast.makeText(this, string, Toast.LENGTH_SHORT).show()
     }
 }

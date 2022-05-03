@@ -8,10 +8,16 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+/**
+ * RoomDatabase class
+ */
 @Database(entities = [Uav::class], version = 1)
 abstract class UavDatabase : RoomDatabase() {
     abstract fun uavDao() : UavDao
 
+    /**
+     * Room database callback for populating db
+     */
     private class UavDatabaseCallback(private val scope: CoroutineScope)
         : RoomDatabase.Callback() {
         override fun onCreate(db: SupportSQLiteDatabase) {
@@ -23,11 +29,11 @@ abstract class UavDatabase : RoomDatabase() {
             }
         }
         suspend fun populateDatabase(uavDao: UavDao) {
-            //delete content
-            //uavDao.deleteAll() TODO
+            //delete content after app restart
+            uavDao.deleteAll()
 
             val uav = Uav(0, "Bayraktar", 10.0, 30)
-            uavDao.insertUAV(uav)
+            uavDao.insert(uav)
         }
     }
 

@@ -4,7 +4,11 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity
+/**
+ * Basic UAV entity class for ROOM db
+ * @author Artem Serediuk
+ */
+@Entity(tableName = "uav_table")
 data class Uav(
     @PrimaryKey
     val id : Int,
