@@ -1,8 +1,9 @@
-package com.epsilonlabs.uavpathcalculator.database
+package com.epsilonlabs.uavpathcalculator.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import com.epsilonlabs.uavpathcalculator.database.entities.UavEntity
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -12,13 +13,13 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface UavDao {
     @Query("SELECT * FROM uav_table")
-    fun getAll() : Flow<List<Uav>>
+    fun getAll() : Flow<List<UavEntity>>
 
     @Query("SELECT * FROM uav_table WHERE id = :id")
-    fun getById(id: Int): Uav
+    fun getById(id: Int): UavEntity
 
     @Insert
-    suspend fun insert(uav: Uav) //not used
+    fun insert(uav: UavEntity) //not used
     
     @Query("DELETE FROM uav_table")
     suspend fun deleteAll()

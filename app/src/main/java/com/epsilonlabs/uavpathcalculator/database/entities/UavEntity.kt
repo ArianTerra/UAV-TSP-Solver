@@ -1,4 +1,4 @@
-package com.epsilonlabs.uavpathcalculator.database
+package com.epsilonlabs.uavpathcalculator.database.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey
  * @author Artem Serediuk
  */
 @Entity(tableName = "uav_table")
-data class Uav(
+data class UavEntity(
     @PrimaryKey
     val id : Int,
     @ColumnInfo(name = "name")

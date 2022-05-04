@@ -1,6 +1,8 @@
-package com.epsilonlabs.uavpathcalculator.database
+package com.epsilonlabs.uavpathcalculator.viewmodels
 
 import androidx.lifecycle.*
+import com.epsilonlabs.uavpathcalculator.database.AppRepository
+import com.epsilonlabs.uavpathcalculator.database.entities.UavEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -8,16 +10,16 @@ import kotlinx.coroutines.launch
 /**
  * View model for live data changing
  */
-class UavViewModel(private val repository: UavRepository) : ViewModel() {
-    val allUavs: LiveData<List<Uav>> = repository.allUavs.asLiveData()
+class UavViewModel(private val repository: AppRepository) : ViewModel() {
+    val allUavs: LiveData<List<UavEntity>> = repository.allUavs.asLiveData()
 
     //TODO change to CoroutineScope
-    fun insert(uav: Uav) = viewModelScope.launch {
+    fun insert(uav: UavEntity) = viewModelScope.launch {
         repository.insert(uav)
     }
 
-    fun getById(id: Int) : LiveData<Uav>  {
-        val result = MutableLiveData<Uav>()
+    fun getById(id: Int) : LiveData<UavEntity>  {
+        val result = MutableLiveData<UavEntity>()
         // seems like viewModelScope.launch is using main thread
         // so I decided to use this instead
         CoroutineScope(Dispatchers.IO).launch {
@@ -28,7 +30,7 @@ class UavViewModel(private val repository: UavRepository) : ViewModel() {
     }
 }
 
-class UavViewModelFactory(private val repository: UavRepository) : ViewModelProvider.Factory{
+class UavViewModelFactory(private val repository: AppRepository) : ViewModelProvider.Factory{
     override fun <T: ViewModel> create(modelClass: Class<T>): T {
         if(modelClass.isAssignableFrom(UavViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")

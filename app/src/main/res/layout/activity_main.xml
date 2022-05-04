@@ -12,7 +12,7 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".activities.main.MapsActivity" />
+        tools:context=".activities.main.MainActivity" />
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/linearLayout"
@@ -26,7 +26,6 @@
             android:id="@+id/expandable_fab_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-
             android:layout_gravity="bottom|end">
 
             <com.nambimobile.widgets.efab.ExpandableFab
@@ -56,24 +55,22 @@
                 app:label_backgroundColor="#808080"
                 app:label_text="Add Start"
                 app:label_textColor="#FFC0CB" />
-<!--            <com.nambimobile.widgets.efab.FabOption-->
-<!--                android:id="@+id/fab_add_end"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                app:fab_color="#FF8800"-->
-<!--                app:fab_icon="@drawable/ic_baseline_add_location_alt_24"-->
-<!--                app:label_backgroundColor="#808080"-->
-<!--                app:label_text="Add End"-->
-<!--                app:label_textColor="#FFC0CB" />-->
-
             <com.nambimobile.widgets.efab.FabOption
                 android:id="@+id/fab_remove"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:fab_color="#5283F5"
+                app:fab_color="#F44336"
                 app:fab_icon="@drawable/ic_baseline_wrong_location_24"
                 app:label_backgroundColor="#0000FF"
                 app:label_text="Remove" />
+            <com.nambimobile.widgets.efab.FabOption
+                android:id="@+id/fab_remove_all"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:fab_color="#F44336"
+                app:fab_icon="@drawable/ic_baseline_wrong_location_24"
+                app:label_backgroundColor="#0000FF"
+                app:label_text="Remove All" />
 
         </com.nambimobile.widgets.efab.ExpandableFabLayout>
 

@@ -6,43 +6,47 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.epsilonlabs.uavpathcalculator.R
 import com.epsilonlabs.uavpathcalculator.activities.result.ResultActivity
-import com.epsilonlabs.uavpathcalculator.databinding.ActivityMapsBinding
+import com.epsilonlabs.uavpathcalculator.databinding.ActivityMainBinding
 import com.epsilonlabs.uavpathcalculator.utils.SimpleToast
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.nambimobile.widgets.efab.FabOption
 
 /*
 * TODO
+*  Add button to clear all markers
+*  Add a text prompt to name a marker while creating
+*  Implement UAV time calculation
+*  Add settings
+*   - autonaming markers switch
 *  Show current editor state (adding/removing node)
-*
 * */
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
-    private val TAG = "MainActivity"
+class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+    private enum class EditorState {
+        DEFAULT, // default state, do nothing
+        ADD_NODE, //add default node
+        ADD_START,  //add starting node
+        REMOVE  //remove node
+    }
 
+    private val TAG = "MainActivity"
+    private lateinit var binding: ActivityMainBinding
     private lateinit var map: GoogleMap
-    private lateinit var binding: ActivityMapsBinding
-    //buttons
-    private lateinit var addDefault : FabOption
-    private lateinit var addStart : FabOption
-    private lateinit var remove : FabOption
-    private lateinit var compute : FloatingActionButton
+
     //variables
     private lateinit var allMarkers : ArrayList<Marker>
     private lateinit var editorState: EditorState
     private var startNode : Marker? = null
-    //private var endNode : Marker? = null
     private var polylinePath : Polyline? = null
+    private var canContinue: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMapsBinding.inflate(layoutInflater)
+        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -50,33 +54,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-
-        //get controls
-        addDefault = findViewById(R.id.fab_add_node)
-        addStart = findViewById(R.id.fab_add_start)
-        //addEnd = findViewById(R.id.fab_add_end)
-        remove = findViewById(R.id.fab_remove)
-        compute = findViewById(R.id.fab_continue)
         //initialize variables
         allMarkers = ArrayList()
         editorState = EditorState.DEFAULT
 
         //set up buttons events
-        addDefault.setOnClickListener {
+        binding.fabAddNode.setOnClickListener {
             editorState = EditorState.ADD_NODE
         }
-        addStart.setOnClickListener {
+        binding.fabAddStart.setOnClickListener {
             editorState = EditorState.ADD_START
         }
-//        addEnd.setOnClickListener {
-//            editorState = EditorState.ADD_END
-//        }
-        remove.setOnClickListener {
+        binding.fabRemove.setOnClickListener {
             editorState = EditorState.REMOVE
         }
-
-
-
+        binding.fabRemoveAll.setOnClickListener {
+            removeAllNodesButtonEvent()
+        }
     }
 
     /**
@@ -105,35 +99,36 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         // Set a listener for marker click.
         map.setOnMarkerClickListener(this)
 
-        compute.setOnClickListener {
-            if(allMarkers.size < 3) {
-                SimpleToast.show(this, "Add more markers!")
-            } else {
-                drawTSP()
-            }
-            //todo launch after
-            val intent = Intent(this@MapsActivity, ResultActivity::class.java)
-            startActivity(intent)
+        // continue button
+        binding.fabContinue.setOnClickListener {
+            resultButtonEvent()
         }
     }
 
-    private fun drawTSP() {
-        polylinePath?.remove()
-        val values = arrayListOf<LatLng>()
-        for (v in allMarkers) values.add(v.position)
-
-        val tsp = TSP(values)
-        val markersPath = tsp.calculateNearestNeighbor()
-        val path = arrayListOf<LatLng>()
-        for (a in markersPath) {
-            path.add(a)
+    private fun resultButtonEvent() {
+        if(canContinue) {
+            val intent = Intent(this@MainActivity, ResultActivity::class.java)
+            startActivity(intent)
+            return
         }
-
-        val options = PolylineOptions()
-            .width(25f)
-            .color(Color.BLUE).addAll(path)
-
-        polylinePath = map.addPolyline(options)
+        if(allMarkers.size < 3) {
+            SimpleToast.show(this, "Add more markers!")
+            canContinue = false
+        } else {
+            drawTSP()
+            //compute.backgroundTintList = ColorStateList.valueOf(Color.rgb(255, 50, 50))
+            SimpleToast.show(this, "Click again for result")
+            canContinue = true
+        }
+    }
+    private fun removeAllNodesButtonEvent() {
+        //TODO make confirmation window
+        for (marker in allMarkers) {
+            marker.remove()
+        }
+        allMarkers.clear()
+        startNode = null
+        SimpleToast.show(this, "All markers removed")
     }
 
     private fun addMarkerButtonsEvent(it: LatLng) {
@@ -155,14 +150,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                     val marker = map.addMarker(MarkerOptions().position(it))
                     if (marker != null) {
                         marker.tag = NodeType.DEFAULT
-                    }
-                    if (marker != null) {
                         allMarkers.add(marker)
                     }
                 }
-            }
-            else -> {
-                //do nothing
             }
         }
         editorState = EditorState.DEFAULT
@@ -180,7 +170,24 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
         startNode = marker
     }
+    private fun drawTSP() {
+        polylinePath?.remove()
+        val values = arrayListOf<LatLng>()
+        for (v in allMarkers) values.add(v.position)
 
+        val tsp = TSP(values)
+        val markersPath = tsp.calculateNearestNeighbor()
+        val path = arrayListOf<LatLng>()
+        for (a in markersPath) {
+            path.add(a)
+        }
+
+        val options = PolylineOptions()
+            .width(25f)
+            .color(Color.BLUE).addAll(path)
+
+        polylinePath = map.addPolyline(options)
+    }
     override fun onMarkerClick(marker: Marker): Boolean {
         if (editorState == EditorState.REMOVE) {
             if(marker.tag == NodeType.START) {

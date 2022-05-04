@@ -5,18 +5,21 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.epsilonlabs.uavpathcalculator.database.dao.UavDao
+import com.epsilonlabs.uavpathcalculator.database.entities.UavEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 /**
  * RoomDatabase class
  */
-@Database(entities = [Uav::class], version = 1)
-abstract class UavDatabase : RoomDatabase() {
+@Database(entities = [UavEntity::class], version = 1)
+abstract class AppDatabase : RoomDatabase() {
     abstract fun uavDao() : UavDao
 
     /**
      * Room database callback for populating db
+     * TODO remake this to populate db from file
      */
     private class UavDatabaseCallback(private val scope: CoroutineScope)
         : RoomDatabase.Callback() {
@@ -31,21 +34,25 @@ abstract class UavDatabase : RoomDatabase() {
         suspend fun populateDatabase(uavDao: UavDao) {
             //delete content after app restart
             uavDao.deleteAll()
-
-            val uav = Uav(0, "Bayraktar", 10.0, 30)
+            //create and add new object to db here
+            var uav = UavEntity(0, "Bayraktar", 10.0, 30)
+            uavDao.insert(uav)
+            uav = UavEntity(1, "Mini bayraktar", 5.0, 30)
+            uavDao.insert(uav)
+            uav = UavEntity(2, "Destroyer", 5.0, 30)
             uavDao.insert(uav)
         }
     }
 
     companion object {
         @Volatile
-        private var INSTANCE : UavDatabase? = null
+        private var INSTANCE : AppDatabase? = null
 
-        fun getDatabase(context: Context, scope: CoroutineScope) : UavDatabase {
+        fun getDatabase(context: Context, scope: CoroutineScope) : AppDatabase {
             return INSTANCE?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
-                    UavDatabase::class.java,
+                    AppDatabase::class.java,
                     "uav_database"
                 ).addCallback(UavDatabaseCallback(scope)).build()
                 INSTANCE = instance
