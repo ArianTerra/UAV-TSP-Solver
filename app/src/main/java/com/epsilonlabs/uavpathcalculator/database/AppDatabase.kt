@@ -37,9 +37,11 @@ abstract class AppDatabase : RoomDatabase() {
             //create and add new object to db here
             var uav = UavEntity(0, "Bayraktar", 10.0, 30)
             uavDao.insert(uav)
-            uav = UavEntity(1, "Mini bayraktar", 5.0, 30)
+            uav = UavEntity(1, "MEGA bayraktar", 5.0, 30)
             uavDao.insert(uav)
-            uav = UavEntity(2, "Destroyer", 5.0, 30)
+            uav = UavEntity(2, "Destroyer", 50.0, 300)
+            uavDao.insert(uav)
+            uav = UavEntity(3, "Abobas", 50.0, 300)
             uavDao.insert(uav)
         }
     }
@@ -53,8 +55,9 @@ abstract class AppDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "uav_database"
-                ).addCallback(UavDatabaseCallback(scope)).build()
+                    "app_database.db"
+                )//.createFromAsset("app_database.db").build()
+                    .addCallback(UavDatabaseCallback(scope)).build()
                 INSTANCE = instance
                 //return instance
                 instance

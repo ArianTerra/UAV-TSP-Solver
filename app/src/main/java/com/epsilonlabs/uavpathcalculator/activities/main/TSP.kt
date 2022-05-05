@@ -2,14 +2,15 @@ package com.epsilonlabs.uavpathcalculator.activities.main
 
 import android.location.Location
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 
 /**
  * Solves Traveling Salesman Problem by creating a distance matrix
  * and using different algorithms (only one available now, TODO).
- * First element in ArrayList<LatLng> is the starting point.
+ * First element in ArrayList<Marker> is the starting point.
  * @author Artem Serediuk
  */
-class TSP(private val markers : ArrayList<LatLng>) {
+class TSP(private val markers : ArrayList<Marker>) {
     private val distanceMatrix : Array<FloatArray> = Array(markers.size) {
         FloatArray(markers.size)
     }
@@ -28,13 +29,13 @@ class TSP(private val markers : ArrayList<LatLng>) {
     /**
      * Calculates distances between 2 LatLng points
      */
-    private fun calculateDistance(markerA : LatLng, markerB : LatLng) : Float {
+    private fun calculateDistance(markerA : Marker, markerB : Marker) : Float {
         val result = FloatArray(1)
         Location.distanceBetween(
-            markerA.latitude,
-            markerA.longitude,
-            markerB.latitude,
-            markerB.longitude,
+            markerA.position.latitude,
+            markerA.position.longitude,
+            markerB.position.latitude,
+            markerB.position.longitude,
             result
         )
         return result[0]
@@ -43,8 +44,8 @@ class TSP(private val markers : ArrayList<LatLng>) {
     /**
      * Solves TSP problem using nearest neighbor algorithm and returns path
      */
-    fun calculateNearestNeighbor() : ArrayList<LatLng> {
-        val path = arrayListOf<LatLng>()
+    fun calculateNearestNeighbor() : ArrayList<Marker> {
+        val path = arrayListOf<Marker>()
         val pathIndexes = arrayListOf<Int>()
         pathIndexes.add(0)
 

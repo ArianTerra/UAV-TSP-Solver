@@ -11,8 +11,8 @@ import kotlinx.coroutines.launch
  * View model for live data changing
  */
 class UavViewModel(private val repository: AppRepository) : ViewModel() {
-    val allUavs: LiveData<List<UavEntity>> = repository.allUavs.asLiveData()
-
+    val allUavsLive: LiveData<List<UavEntity>> = repository.allUavsLive.asLiveData()
+    //val allUavs: List<UavEntity> = repository.getAllUavs()
     //TODO change to CoroutineScope
     fun insert(uav: UavEntity) = viewModelScope.launch {
         repository.insert(uav)

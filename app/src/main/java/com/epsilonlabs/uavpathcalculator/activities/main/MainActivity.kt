@@ -106,9 +106,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
     private fun resultButtonEvent() {
+//        val intent = Intent(this@MainActivity, ResultActivity::class.java)
+//        startActivity(intent)
         if(canContinue) {
             val intent = Intent(this@MainActivity, ResultActivity::class.java)
             startActivity(intent)
+            canContinue = false
             return
         }
         if(allMarkers.size < 3) {
@@ -147,7 +150,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                     addStartNode(it)
                     SimpleToast.show(this, "Creating start node...")
                 } else {
-                    val marker = map.addMarker(MarkerOptions().position(it))
+                    val marker = map.addMarker( //todo
+                        MarkerOptions().position(it).title((allMarkers.size+1).toString())
+                    )
                     if (marker != null) {
                         marker.tag = NodeType.DEFAULT
                         allMarkers.add(marker)
@@ -162,7 +167,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         val marker = map.addMarker(
             MarkerOptions().position(it).icon(
                 BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
-            )
+            ).title((allMarkers.size+1).toString())
         )
         marker?.tag = NodeType.START
         if (marker != null) {
@@ -172,19 +177,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
     private fun drawTSP() {
         polylinePath?.remove()
-        val values = arrayListOf<LatLng>()
-        for (v in allMarkers) values.add(v.position)
 
-        val tsp = TSP(values)
+        val tsp = TSP(allMarkers)
         val markersPath = tsp.calculateNearestNeighbor()
-        val path = arrayListOf<LatLng>()
-        for (a in markersPath) {
-            path.add(a)
-        }
 
         val options = PolylineOptions()
             .width(25f)
-            .color(Color.BLUE).addAll(path)
+            .color(Color.BLUE).addAll(markersPath.map { it.position })
 
         polylinePath = map.addPolyline(options)
     }

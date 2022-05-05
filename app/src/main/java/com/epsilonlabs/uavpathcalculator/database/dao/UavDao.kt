@@ -13,14 +13,17 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface UavDao {
     @Query("SELECT * FROM uav_table")
-    fun getAll() : Flow<List<UavEntity>>
+    fun getAllLive() : Flow<List<UavEntity>>
+
+    @Query("SELECT * FROM uav_table")
+    fun getAll() : List<UavEntity>
 
     @Query("SELECT * FROM uav_table WHERE id = :id")
     fun getById(id: Int): UavEntity
 
     @Insert
-    fun insert(uav: UavEntity) //not used
+    fun insert(uav: UavEntity)
     
     @Query("DELETE FROM uav_table")
-    suspend fun deleteAll()
+    fun deleteAll()
 }
