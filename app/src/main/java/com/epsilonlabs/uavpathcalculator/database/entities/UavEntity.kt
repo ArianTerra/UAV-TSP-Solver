@@ -18,4 +18,8 @@ data class UavEntity(
     val speed : Double?,
     @ColumnInfo(name = "flight_time")
     val flightTime : Int?
-)
+) {
+    override fun toString(): String {
+        return name!!
+    }
+}

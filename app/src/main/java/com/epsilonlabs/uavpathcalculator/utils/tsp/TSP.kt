@@ -1,8 +1,11 @@
-package com.epsilonlabs.uavpathcalculator.activities.main
+package com.epsilonlabs.uavpathcalculator.utils.tsp
 
 import android.location.Location
-import com.google.android.gms.maps.model.LatLng
+import android.util.Log
+import com.epsilonlabs.uavpathcalculator.database.entities.UavEntity
 import com.google.android.gms.maps.model.Marker
+import java.time.Duration
+import java.time.LocalTime
 
 /**
  * Solves Traveling Salesman Problem by creating a distance matrix
@@ -27,7 +30,7 @@ class TSP(private val markers : ArrayList<Marker>) {
     }
 
     /**
-     * Calculates distances between 2 LatLng points
+     * Calculates distances in meters between 2 LatLng points
      */
     private fun calculateDistance(markerA : Marker, markerB : Marker) : Float {
         val result = FloatArray(1)
@@ -65,5 +68,45 @@ class TSP(private val markers : ArrayList<Marker>) {
             path.add(markers[i])
         }
         return path
+    }
+    fun createSchedule(
+        uav: UavEntity,
+        path: ArrayList<Marker>,
+        departureTime: LocalTime,
+        timeMonitoring: Duration,
+        timeCharging: Duration,
+        abrasSpeed: Int
+    ): ArrayList<ResultData> {
+        val result = arrayListOf<ResultData>()
+
+        result.add(
+            ResultData(
+                path[0],
+                false,
+                departureTime,
+                departureTime,
+                timeMonitoring,
+                Duration.ofMinutes(uav.flightTime!!.toLong())
+            )
+        )
+        for(i in 1 until path.size) {
+            //todo should be more precise, maybe change it to seconds
+            val flightTime = Duration.ofMinutes(
+                (calculateDistance(path[i], path[i-1]) / (uav.speed!! * 16.6667)).toLong()
+            )
+            val arrivalTime = result[i-1].arrivalTime!! + flightTime
+            Log.e("TSP", "Point [$i] Flight time: $flightTime Arrival: $arrivalTime")
+            result.add(
+                ResultData(
+                    path[i],
+                    false,
+                    arrivalTime,
+                    null,
+                    null,
+                    null
+                )
+            )
+        }
+        return result
     }
 }

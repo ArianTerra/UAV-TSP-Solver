@@ -6,13 +6,17 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.epsilonlabs.uavpathcalculator.R
 import com.epsilonlabs.uavpathcalculator.activities.result.ResultActivity
+import com.epsilonlabs.uavpathcalculator.database.entities.UavEntity
 import com.epsilonlabs.uavpathcalculator.databinding.ActivityMainBinding
 import com.epsilonlabs.uavpathcalculator.utils.SimpleToast
+import com.epsilonlabs.uavpathcalculator.utils.tsp.TSP
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import java.time.Duration
+import java.time.LocalTime
 
 /*
 * TODO
@@ -45,7 +49,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -180,7 +183,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
         val tsp = TSP(allMarkers)
         val markersPath = tsp.calculateNearestNeighbor()
-
+        //todo clean this
+        tsp.createSchedule(
+            UavEntity(0, "A", 40.0, 31),
+            markersPath,
+            LocalTime.of(1, 0),
+            Duration.ofMinutes(3),
+            Duration.ofMinutes(2),
+            100
+        )
         val options = PolylineOptions()
             .width(25f)
             .color(Color.BLUE).addAll(markersPath.map { it.position })

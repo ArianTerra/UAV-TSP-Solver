@@ -35,7 +35,7 @@ abstract class AppDatabase : RoomDatabase() {
             //delete content after app restart
             uavDao.deleteAll()
             //create and add new object to db here
-            var uav = UavEntity(0, "Bayraktar", 10.0, 30)
+            var uav = UavEntity(0, "Bayraktar", 40.0, 31)
             uavDao.insert(uav)
             uav = UavEntity(1, "MEGA bayraktar", 5.0, 30)
             uavDao.insert(uav)
