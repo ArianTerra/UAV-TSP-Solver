@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt' //for room
     id "com.google.android.libraries.mapsplatform.secrets-gradle-plugin"
+    id "org.jetbrains.kotlin.plugin.parcelize"
 }
 
 android {
@@ -37,6 +38,7 @@ android {
     buildFeatures {
         viewBinding true
     }
+
 }
 
 dependencies {

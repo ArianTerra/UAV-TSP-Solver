@@ -17,6 +17,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import java.time.Duration
 import java.time.LocalTime
+import com.epsilonlabs.uavpathcalculator.utils.MarkerParcelable
 
 /*
 * TODO
@@ -46,6 +47,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     private var startNode : Marker? = null
     private var polylinePath : Polyline? = null
     private var canContinue: Boolean = false
+    private lateinit var path: ArrayList<MarkerParcelable>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,6 +115,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 //        startActivity(intent)
         if(canContinue) {
             val intent = Intent(this@MainActivity, ResultActivity::class.java)
+            intent.putExtra("PATH", path)
             startActivity(intent)
             canContinue = false
             return
@@ -154,7 +157,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                     SimpleToast.show(this, "Creating start node...")
                 } else {
                     val marker = map.addMarker( //todo
-                        MarkerOptions().position(it).title((allMarkers.size+1).toString())
+                        MarkerOptions().position(it).title((allMarkers.size).toString())
                     )
                     if (marker != null) {
                         marker.tag = NodeType.DEFAULT
@@ -170,7 +173,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         val marker = map.addMarker(
             MarkerOptions().position(it).icon(
                 BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
-            ).title((allMarkers.size+1).toString())
+            ).title("0")
         )
         marker?.tag = NodeType.START
         if (marker != null) {
@@ -180,21 +183,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
     private fun drawTSP() {
         polylinePath?.remove()
+        val markers = allMarkers.mapTo(ArrayList<MarkerParcelable>()) {
+            MarkerParcelable(it.title!!, it.position.latitude, it.position.longitude)
+        }
+        val tsp = TSP(markers)
+        path = tsp.calculateNearestNeighbor()
 
-        val tsp = TSP(allMarkers)
-        val markersPath = tsp.calculateNearestNeighbor()
-        //todo clean this
-        tsp.createSchedule(
-            UavEntity(0, "A", 40.0, 31),
-            markersPath,
-            LocalTime.of(1, 0),
-            Duration.ofMinutes(3),
-            Duration.ofMinutes(2),
-            100
-        )
         val options = PolylineOptions()
             .width(25f)
-            .color(Color.BLUE).addAll(markersPath.map { it.position })
+            .color(Color.BLUE).addAll(path.map { LatLng(it.latitude, it.longitude) })
 
         polylinePath = map.addPolyline(options)
     }

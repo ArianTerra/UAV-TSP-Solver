@@ -4,11 +4,78 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.result.ResultActivity">
+    tools:context=".activities.result.ResultActivity"
+    android:orientation="vertical">
 
     <Spinner
         android:id="@+id/uav_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+    <ScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TableLayout
+                android:id="@+id/schedule_table"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp">
 
+                <TableRow
+                    android:background="@drawable/table_row_bg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:padding="5dp">
+                    <TextView
+                        android:text="Point"
+                        android:background="@drawable/table_cell_bg"
+                        android:paddingRight="10dp">
+                    </TextView>
+                    <TextView
+                        android:text="Aerial Vehicle"
+                        android:background="@drawable/table_cell_bg"
+                        android:paddingRight="10dp">
+                    </TextView>
+                    <TextView
+                        android:text="Arrival"
+                        android:background="@drawable/table_cell_bg"
+                        android:paddingRight="10dp">
+                    </TextView>
+                    <TextView
+                        android:text="Time spent"
+                        android:background="@drawable/table_cell_bg"
+                        android:paddingRight="10dp">
+                    </TextView>
+                    <TextView
+                        android:text="Departure"
+                        android:background="@drawable/table_cell_bg"
+                        android:paddingRight="10dp">
+                    </TextView>
+                    <TextView
+                        android:text="Battery time"
+                        android:background="@drawable/table_cell_bg"
+                        android:paddingRight="10dp">
+                    </TextView>
+                </TableRow>
+            </TableLayout>
+        </HorizontalScrollView>
+    </ScrollView>
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/buttonWrapper"
+        android:layout_gravity="end"
+        android:orientation="vertical"
+        android:gravity="bottom|end"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_fill_table"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:contentDescription="TODO"
+            android:src="@drawable/ic_baseline_done_24" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
 </LinearLayout>
