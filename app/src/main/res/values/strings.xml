@@ -1,4 +1,14 @@
 <resources>
     <string name="app_name">UAV Path Calculator</string>
-    <string name="title_activity_maps">MapsActivity</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="table_header_point">Point</string>
+    <string name="table_header_aerial_vehicle">Aerial Vehicle</string>
+    <string name="table_header_arrival">Arrival</string>
+    <string name="table_header_time_spent">Time spent</string>
+    <string name="table_header_departure">Departure</string>
+    <string name="table_header_battery_time">Battery time</string>
+
+    <string name="start_point_name">DQ</string>
+    <string name="point_name">MS</string>
+    <string name="abras">ABRAS</string>
 </resources>

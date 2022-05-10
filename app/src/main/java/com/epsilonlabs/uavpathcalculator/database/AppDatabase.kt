@@ -41,7 +41,7 @@ abstract class AppDatabase : RoomDatabase() {
             uavDao.insert(uav)
             uav = UavEntity(2, "Destroyer", 50.0, 300)
             uavDao.insert(uav)
-            uav = UavEntity(3, "Abobas", 50.0, 300)
+            uav = UavEntity(3, "Abobas", 30.0, 5)
             uavDao.insert(uav)
         }
     }

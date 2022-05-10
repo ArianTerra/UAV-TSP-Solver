@@ -6,17 +6,14 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.epsilonlabs.uavpathcalculator.R
 import com.epsilonlabs.uavpathcalculator.activities.result.ResultActivity
-import com.epsilonlabs.uavpathcalculator.database.entities.UavEntity
 import com.epsilonlabs.uavpathcalculator.databinding.ActivityMainBinding
-import com.epsilonlabs.uavpathcalculator.utils.SimpleToast
+import com.epsilonlabs.uavpathcalculator.utils.AlertUtils
 import com.epsilonlabs.uavpathcalculator.utils.tsp.TSP
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
-import java.time.Duration
-import java.time.LocalTime
 import com.epsilonlabs.uavpathcalculator.utils.MarkerParcelable
 
 /*
@@ -81,8 +78,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
      * If Google Play services is not installed on the device, the user will be prompted to install
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
@@ -93,7 +88,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         map.setOnMapClickListener {
             addMarkerButtonsEvent(it)
         }
-
+        //move camera to KHAI
         map.setOnMapLoadedCallback {
             val khaiBound = LatLngBounds(
                 LatLng(50.039419, 36.275588), //SW
@@ -121,12 +116,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             return
         }
         if(allMarkers.size < 3) {
-            SimpleToast.show(this, "Add more markers!")
+            AlertUtils.showShortToast(this, "Add more markers!")
             canContinue = false
         } else {
             drawTSP()
             //compute.backgroundTintList = ColorStateList.valueOf(Color.rgb(255, 50, 50))
-            SimpleToast.show(this, "Click again for result")
+            AlertUtils.showShortToast(this, "Click again for result")
             canContinue = true
         }
     }
@@ -137,7 +132,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
         allMarkers.clear()
         startNode = null
-        SimpleToast.show(this, "All markers removed")
+        polylinePath?.remove()
+        AlertUtils.showShortToast(this, "All markers removed")
     }
 
     private fun addMarkerButtonsEvent(it: LatLng) {
@@ -147,17 +143,18 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                     addStartNode(it)
                 } else {
                     startNode!!.position = it
-                    SimpleToast.show(this, "Moving start node...")
+                    AlertUtils.showShortToast(this, "Moving start node...")
                 }
 
             }
             EditorState.ADD_NODE -> {
                 if(startNode == null) {
                     addStartNode(it)
-                    SimpleToast.show(this, "Creating start node...")
+                    AlertUtils.showShortToast(this, "Creating start node...")
                 } else {
                     val marker = map.addMarker( //todo
-                        MarkerOptions().position(it).title((allMarkers.size).toString())
+                        MarkerOptions().position(it).title(getString(R.string.point_name) +
+                                (allMarkers.size).toString())
                     )
                     if (marker != null) {
                         marker.tag = NodeType.DEFAULT
@@ -173,7 +170,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         val marker = map.addMarker(
             MarkerOptions().position(it).icon(
                 BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)
-            ).title("0")
+            ).title(getString(R.string.start_point_name))
         )
         marker?.tag = NodeType.START
         if (marker != null) {
@@ -198,13 +195,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     override fun onMarkerClick(marker: Marker): Boolean {
         if (editorState == EditorState.REMOVE) {
             if(marker.tag == NodeType.START) {
-                SimpleToast.show(this,"Can't delete start node")
+                AlertUtils.showShortToast(this,"Can't delete start node")
             } else {
                 allMarkers.remove(marker)
                 marker.remove()
-                SimpleToast.show(this,"Marker deleted")
+                polylinePath?.remove()
+                AlertUtils.showShortToast(this,"Marker deleted")
             }
+            return true
         }
-        return true
+        return false
     }
 }

@@ -23,42 +23,7 @@
                 android:layout_height="wrap_content"
                 android:padding="5dp">
 
-                <TableRow
-                    android:background="@drawable/table_row_bg"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:padding="5dp">
-                    <TextView
-                        android:text="Point"
-                        android:background="@drawable/table_cell_bg"
-                        android:paddingRight="10dp">
-                    </TextView>
-                    <TextView
-                        android:text="Aerial Vehicle"
-                        android:background="@drawable/table_cell_bg"
-                        android:paddingRight="10dp">
-                    </TextView>
-                    <TextView
-                        android:text="Arrival"
-                        android:background="@drawable/table_cell_bg"
-                        android:paddingRight="10dp">
-                    </TextView>
-                    <TextView
-                        android:text="Time spent"
-                        android:background="@drawable/table_cell_bg"
-                        android:paddingRight="10dp">
-                    </TextView>
-                    <TextView
-                        android:text="Departure"
-                        android:background="@drawable/table_cell_bg"
-                        android:paddingRight="10dp">
-                    </TextView>
-                    <TextView
-                        android:text="Battery time"
-                        android:background="@drawable/table_cell_bg"
-                        android:paddingRight="10dp">
-                    </TextView>
-                </TableRow>
+
             </TableLayout>
         </HorizontalScrollView>
     </ScrollView>
