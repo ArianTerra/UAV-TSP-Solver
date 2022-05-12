@@ -6,7 +6,6 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.epsilonlabs.uavpathcalculator.R
@@ -17,7 +16,6 @@ import com.epsilonlabs.uavpathcalculator.utils.AlertUtils
 import com.epsilonlabs.uavpathcalculator.utils.MarkerParcelable
 import com.epsilonlabs.uavpathcalculator.utils.tsp.ResultData
 import com.epsilonlabs.uavpathcalculator.utils.tsp.ScheduleCreator
-import com.epsilonlabs.uavpathcalculator.utils.tsp.TSP
 import com.epsilonlabs.uavpathcalculator.viewmodels.UavViewModel
 import com.epsilonlabs.uavpathcalculator.viewmodels.UavViewModelFactory
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -71,7 +69,7 @@ class ResultActivity : AppCompatActivity() {
             Duration.ofMinutes(3),
             Duration.ofMinutes(2),
             100
-        ).schedule
+        ).scheduleABRAS
     }
     private fun inflateTable(resultArray: ArrayList<ResultData>) {
         val table = binding.scheduleTable
@@ -88,7 +86,7 @@ class ResultActivity : AppCompatActivity() {
                 row.setBackgroundResource(R.drawable.table_row_last_bg)
             }
             row.findViewById<TextView>(R.id.row_point).text = result.marker.title
-            row.findViewById<TextView>(R.id.row_aerial_vehicle).text = "TODO"
+            row.findViewById<TextView>(R.id.row_aerial_vehicle).text = result.uavName
             row.findViewById<TextView>(R.id.row_arrival).text = result.arrivalTime.toString()
             row.findViewById<TextView>(R.id.row_time_spent).text = result.timeSpent.toString()
             row.findViewById<TextView>(R.id.row_departure).text = result.departureTime.toString()

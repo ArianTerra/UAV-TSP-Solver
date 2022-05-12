@@ -6,11 +6,58 @@
     android:layout_height="match_parent"
     tools:context=".activities.result.ResultActivity"
     android:orientation="vertical">
-
-    <Spinner
-        android:id="@+id/uav_spinner"
+    <TableLayout
+        android:id="@+id/uav_settings_table"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:stretchColumns="*">
+        <TableRow
+            android:paddingTop="5dp"
+            android:layout_width="match_parent">
+            <TextView
+                android:text="UAV" />
+            <Spinner
+                android:id="@+id/uav_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </TableRow>
+        <TableRow
+            android:paddingTop="5dp"
+            android:layout_width="match_parent">
+            <TextView
+                android:text="Start Time"
+                />
+            <Button
+                android:id="@+id/time_picker_button"
+                android:text="01:00"/>
+        </TableRow>
+        <TableRow
+            android:paddingTop="5dp"
+            android:layout_width="match_parent">
+            <TextView
+                android:text="Monitoring Time"
+                />
+            <EditText
+                android:id="@+id/time_monitoring_input"
+                android:inputType="number"
+                android:text="3"/>
+        </TableRow>
+        <TableRow
+            android:paddingTop="5dp"
+            android:layout_width="match_parent">
+            <TextView
+                android:text="Charging Time"
+                />
+            <EditText
+                android:id="@+id/time_charging_input"
+                android:inputType="number"
+                android:text="2"/>
+        </TableRow>
+    </TableLayout>
+
     <ScrollView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
@@ -22,8 +69,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="5dp">
-
-
             </TableLayout>
         </HorizontalScrollView>
     </ScrollView>

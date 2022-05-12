@@ -16,30 +16,60 @@ class ScheduleCreator(
     private val timeCharging: Duration,
     private val abrasSpeed: Int
 ) {
-    val schedule: ArrayList<ResultData> = arrayListOf<ResultData>()
-    val scheduleWithABRAS:  ArrayList<ResultData>
+    val scheduleUAV: ArrayList<ResultData> = arrayListOf<ResultData>()
+    val scheduleABRAS:  ArrayList<ResultData>
         get() {
             val arr = arrayListOf<ResultData>()
-            for(point in schedule) {
-                arr.add(point)
+
+            var firstPBR = true
+            val DH = path[0] //TODO add new type of marker for DH, for now it is DQ
+
+            for(point in scheduleUAV) {
+                //return var
+                val arrival: LocalTime
+                val departure: LocalTime
+                val timeSpent: Duration
+
                 if(point.isPBR) {
-                    val arrival = point.arrivalTime!! + timeMonitoring - Duration.ofMinutes(2)
-                    TODO()
+                    if(firstPBR) {
+                        firstPBR = false
+                        arrival = point.arrivalTime!! + timeMonitoring - Duration.ofMinutes(2)
+                        //add new record to schedule before PBR1
+                        val departureDH = arrival - Duration.ofSeconds(
+                            (MapUtils.calculateDistance(DH, point.marker) / (abrasSpeed / 3.6)).roundToLong()
+                        )
+                        arr.add(ResultData(DH, true, "ABRAS", departureTimeStart, departureDH, Duration.ZERO, Duration.ZERO))
+                        //time spent at PBR1
+                        timeSpent = Duration.between(point.departureTime!!, arrival) + Duration.ofMinutes(2)
+                        departure = point.departureTime + Duration.ofMinutes(2)
+                    } else
+                    {
+                        arrival = arr[arr.size - 1].departureTime!! + Duration.ofSeconds(
+                                (MapUtils.calculateDistance(point.marker, arr[arr.size - 1].marker) /
+                                        (abrasSpeed / 3.6)).roundToLong())
+                        departure = point.departureTime!! + Duration.ofMinutes(2)
+                        timeSpent = Duration.between(departure, arrival)
+
+                    }
+                    arr.add(ResultData(point.marker, true, "ABRAS", arrival, departure, timeSpent, Duration.ZERO))
                 }
             }
+
             return arr
         }
+    val hasPBR: Boolean = scheduleUAV.any { value -> value.isPBR }
 
     init {
         val start = ResultData(
             path[0],
             false,
+            uav.name!!,
             departureTimeStart,
             departureTimeStart,
             Duration.ZERO,
             Duration.ofMinutes(uav.flightTime!!.toLong())
         )
-        schedule.add(start)
+        scheduleUAV.add(start)
         for(i in 1 until path.size) {
             val distance = MapUtils.calculateDistance(path[i], path[i-1])
 
@@ -54,11 +84,11 @@ class ScheduleCreator(
             }
             //Log.i("TSP", "[$i] Distance: $distance FlightTime: $flightTime")
             //Log.e("TSP", "Point [$i] Flight time: ${flightTime.seconds}s Arrival: $arrivalTime")
-            val arrivalTime = schedule[i-1].arrivalTime!! + flightTime + schedule[i-1].timeSpent
+            val arrivalTime = scheduleUAV[i-1].arrivalTime!! + flightTime + scheduleUAV[i-1].timeSpent
             //determine if this point is a PBR
             //calculate distance between this and next point
             var isPBR = false
-            var timeLeft = schedule[i-1].batteryTimeLeft!! - timeMonitoring
+            var timeLeft = scheduleUAV[i-1].batteryTimeLeft!! - timeMonitoring
             if(timeLeft.isNegative || timeLeft.isZero) {
                 timeLeft = Duration.ofMinutes(uav.flightTime!!.toLong())
                 isPBR = true
@@ -75,14 +105,15 @@ class ScheduleCreator(
             val point = ResultData(
                 path[i],
                 isPBR,
+                uav.name!!,
                 arrivalTime,
                 departureTime,
                 timeSpent,
                 timeLeft
             )
 
-            schedule.add(point)
-            Log.i("TSP", schedule[i].toString())
+            scheduleUAV.add(point)
+            Log.i("TSP", scheduleUAV[i].toString())
         }
     }
 }

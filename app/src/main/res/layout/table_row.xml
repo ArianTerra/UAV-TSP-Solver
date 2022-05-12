@@ -5,46 +5,46 @@
     android:layout_height="match_parent"
     android:padding="5dp"
     xmlns:android="http://schemas.android.com/apk/res/android">
+
     <TextView
         android:id="@+id/row_point"
         android:text="@string/table_header_point"
         android:textColor="@color/black"
         android:background="@drawable/table_cell_bg"
-        android:paddingRight="10dp">
-    </TextView>
+        android:paddingRight="10dp" />
+
     <TextView
         android:id="@+id/row_aerial_vehicle"
         android:text="@string/table_header_aerial_vehicle"
         android:textColor="@color/black"
         android:background="@drawable/table_cell_bg"
-        android:paddingRight="10dp">
-    </TextView>
+        android:paddingRight="10dp" />
+
     <TextView
         android:id="@+id/row_arrival"
         android:text="@string/table_header_arrival"
         android:textColor="@color/black"
         android:background="@drawable/table_cell_bg"
-        android:paddingRight="10dp">
-    </TextView>
+        android:paddingRight="10dp" />
+
     <TextView
         android:id="@+id/row_time_spent"
         android:text="@string/table_header_time_spent"
         android:textColor="@color/black"
         android:background="@drawable/table_cell_bg"
-        android:paddingRight="10dp">
-    </TextView>
+        android:paddingRight="10dp" />
+
     <TextView
         android:id="@+id/row_departure"
         android:text="@string/table_header_departure"
         android:textColor="@color/black"
         android:background="@drawable/table_cell_bg"
-        android:paddingRight="10dp">
-    </TextView>
+        android:paddingRight="10dp" />
+
     <TextView
         android:id="@+id/row_battery_time"
         android:text="@string/table_header_battery_time"
         android:textColor="@color/black"
         android:background="@drawable/table_cell_bg"
-        android:paddingRight="10dp">
-    </TextView>
+        android:paddingRight="10dp" />
 </TableRow>
