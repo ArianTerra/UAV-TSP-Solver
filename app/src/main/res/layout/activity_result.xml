@@ -6,86 +6,107 @@
     android:layout_height="match_parent"
     tools:context=".activities.result.ResultActivity"
     android:orientation="vertical">
-    <TableLayout
-        android:id="@+id/uav_settings_table"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
-        android:stretchColumns="*">
-        <TableRow
-            android:paddingTop="5dp"
-            android:layout_width="match_parent">
-            <TextView
-                android:text="UAV" />
-            <Spinner
-                android:id="@+id/uav_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </TableRow>
-        <TableRow
-            android:paddingTop="5dp"
-            android:layout_width="match_parent">
-            <TextView
-                android:text="Start Time"
-                />
-            <Button
-                android:id="@+id/time_picker_button"
-                android:text="01:00"/>
-        </TableRow>
-        <TableRow
-            android:paddingTop="5dp"
-            android:layout_width="match_parent">
-            <TextView
-                android:text="Monitoring Time"
-                />
-            <EditText
-                android:id="@+id/time_monitoring_input"
-                android:inputType="number"
-                android:text="3"/>
-        </TableRow>
-        <TableRow
-            android:paddingTop="5dp"
-            android:layout_width="match_parent">
-            <TextView
-                android:text="Charging Time"
-                />
-            <EditText
-                android:id="@+id/time_charging_input"
-                android:inputType="number"
-                android:text="2"/>
-        </TableRow>
-    </TableLayout>
 
     <ScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <HorizontalScrollView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <TableLayout
-                android:id="@+id/schedule_table"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="5dp">
-            </TableLayout>
-        </HorizontalScrollView>
-    </ScrollView>
-    <androidx.appcompat.widget.LinearLayoutCompat
-        android:id="@+id/buttonWrapper"
-        android:layout_gravity="end"
-        android:orientation="vertical"
-        android:gravity="bottom|end"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_fill_table"
-            android:layout_width="wrap_content"
-            android:layout_height="60dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            android:contentDescription="TODO"
-            android:src="@drawable/ic_baseline_done_24" />
-    </androidx.appcompat.widget.LinearLayoutCompat>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TableLayout
+                android:id="@+id/uav_settings_table"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="10dp"
+                android:stretchColumns="*">
+                <TableRow
+                    android:paddingTop="3dp"
+                    android:layout_width="match_parent">
+                    <TextView
+                        android:text="UAV" />
+                    <Spinner
+                        android:id="@+id/uav_spinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </TableRow>
+                <TableRow
+                    android:paddingTop="3dp"
+                    android:layout_width="match_parent">
+                    <TextView
+                        android:text="Start Time"
+                        />
+                    <Button
+                        android:id="@+id/time_picker_button"
+                        android:text="01:00"/>
+                </TableRow>
+                <TableRow
+                    android:paddingTop="3dp"
+                    android:layout_width="match_parent">
+                    <TextView
+                        android:text="Monitoring Time"
+                        />
+                    <EditText
+                        android:id="@+id/time_monitoring_input"
+                        android:inputType="number"
+                        android:text="3"/>
+                </TableRow>
+                <TableRow
+                    android:paddingTop="3dp"
+                    android:layout_width="match_parent">
+                    <TextView
+                        android:text="Charging Time"
+                        />
+                    <EditText
+                        android:id="@+id/time_charging_input"
+                        android:inputType="number"
+                        android:text="2"/>
+                </TableRow>
+                <TableRow
+                    android:paddingTop="3dp"
+                    android:layout_width="match_parent">
+                    <TextView
+                        android:text="ABRAS speed"
+                        />
+                    <EditText
+                        android:id="@+id/abras_speed_input"
+                        android:inputType="number"
+                        android:text="100"/>
+                </TableRow>
+            </TableLayout>
+            <Button
+                android:id="@+id/result_button"
+                android:text="Get Schedule"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"/>
+            <TextView
+                android:text="UAV info:"
+                android:layout_marginHorizontal="10dp"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"/>
+            <TextView
+                android:id="@+id/uav_info_text"
+                android:text="UAV info placeholder"
+                android:layout_marginHorizontal="10dp"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"/>
+            <HorizontalScrollView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TableLayout
+                    android:id="@+id/schedule_table"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp">
+                </TableLayout>
+            </HorizontalScrollView>
+        </LinearLayout>
+    </ScrollView>
+
+
+
+
 </LinearLayout>

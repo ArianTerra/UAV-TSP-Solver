@@ -1,10 +1,10 @@
 package com.epsilonlabs.uavpathcalculator.activities.result
 
+import android.app.TimePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.widget.ArrayAdapter
-import android.widget.Spinner
-import android.widget.TextView
+import android.view.View
+import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -27,7 +27,7 @@ class ResultActivity : AppCompatActivity() {
     private val uavViewModel: UavViewModel by viewModels {
         UavViewModelFactory((application as AppApplication).repository)
     }
-
+    private var departureTime: LocalTime = LocalTime.of(1,0)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityResultBinding.inflate(layoutInflater)
@@ -35,17 +35,30 @@ class ResultActivity : AppCompatActivity() {
 
         fillSpinner()
 
-        findViewById<FloatingActionButton>(R.id.fab_fill_table).setOnClickListener {
+        binding.resultButton.setOnClickListener {
             try {
                 val data = calculateSchedule()
                 inflateTable(data)
+                //setUavInfoText()
             } catch (e: IllegalArgumentException) {
                 AlertUtils.showOkAlert(this, "Error", e.message!!)
             }
-
+        }
+        binding.timePickerButton.setOnClickListener {
+            showTimePicker()
+        }
+        binding.uavSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                setUavInfoText()
+            }
+            override fun onNothingSelected(p0: AdapterView<*>?) {}
         }
 
     }
+
+    /**
+     * Connects to DB and gets all UAV data from it to spinner
+     */
     private fun fillSpinner() {
         val uavList: ArrayList<UavEntity> = arrayListOf()
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, uavList)
@@ -59,18 +72,40 @@ class ResultActivity : AppCompatActivity() {
         val spinner = findViewById<Spinner>(R.id.uav_spinner)
         spinner.adapter = adapter
     }
+
+    /**
+     * Reads all values from input and creates table data
+     */
     private fun calculateSchedule() : ArrayList<ResultData> {
         val path = this.intent.extras?.get("PATH") as ArrayList<MarkerParcelable>
         val uav = binding.uavSpinner.selectedItem as UavEntity
+        //parse input settings
+        val timeMonitoring = binding.timeMonitoringInput.text.toString().toIntOrNull()
+        val timeCharging = binding.timeChargingInput.text.toString().toIntOrNull()
+        val abrasSpeed = binding.abrasSpeedInput.text.toString().toIntOrNull()
+        if(timeMonitoring == null || timeMonitoring <= 0) {
+            throw IllegalArgumentException("Monitoring time is set to wrong value")
+        }
+        if(timeCharging == null || timeCharging <= 0) {
+            throw IllegalArgumentException("Charging time is set to wrong value")
+        }
+        if(abrasSpeed == null || abrasSpeed <= 0) {
+            throw IllegalArgumentException("ABRAS speed is set to wrong value")
+        }
+
         return ScheduleCreator(
             uav,
             path,
-            LocalTime.NOON, //TODO make settings for this
-            Duration.ofMinutes(3),
-            Duration.ofMinutes(2),
-            100
-        ).scheduleABRAS
+            departureTime,
+            Duration.ofMinutes(timeMonitoring.toLong()),
+            Duration.ofMinutes(timeCharging.toLong()),
+            100 //TODO
+        ).schedule
     }
+
+    /**
+     * Draws table
+     */
     private fun inflateTable(resultArray: ArrayList<ResultData>) {
         val table = binding.scheduleTable
         //clear all rows
@@ -87,11 +122,31 @@ class ResultActivity : AppCompatActivity() {
             }
             row.findViewById<TextView>(R.id.row_point).text = result.marker.title
             row.findViewById<TextView>(R.id.row_aerial_vehicle).text = result.uavName
-            row.findViewById<TextView>(R.id.row_arrival).text = result.arrivalTime.toString()
-            row.findViewById<TextView>(R.id.row_time_spent).text = result.timeSpent.toString()
-            row.findViewById<TextView>(R.id.row_departure).text = result.departureTime.toString()
-            row.findViewById<TextView>(R.id.row_battery_time).text = result.batteryTimeLeft.toString()
+            row.findViewById<TextView>(R.id.row_arrival).text = result.arrivalTime?.toString().orEmpty()
+            row.findViewById<TextView>(R.id.row_time_spent).text = result.timeSpent?.toString().orEmpty()
+            row.findViewById<TextView>(R.id.row_departure).text = result.departureTime?.toString().orEmpty()
+            row.findViewById<TextView>(R.id.row_battery_time).text = result.batteryTimeLeft?.toString().orEmpty()
             table.addView(row)
         }
+    }
+
+    private fun setUavInfoText() {
+        val uav = binding.uavSpinner.selectedItem as UavEntity
+        binding.uavInfoText.text = "ID: ${uav.id} Name: ${uav.name} Speed: ${uav.speed} km/h " +
+                "Battery time: ${uav.flightTime} m"
+    }
+
+    /**
+     * Time picker pop up window
+     */
+    private fun showTimePicker() {
+        val listener = TimePickerDialog.OnTimeSetListener { _, hour, minute ->
+            binding.timePickerButton.text = "%02d:%02d".format(hour, minute)
+            departureTime = LocalTime.of(hour, minute)
+        }
+        val timePickerDialog = TimePickerDialog(this, listener, departureTime.hour,
+            departureTime.minute, true)
+        timePickerDialog.setTitle("Select time:")
+        timePickerDialog.show()
     }
 }
