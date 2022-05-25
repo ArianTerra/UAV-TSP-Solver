@@ -1,88 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <fragment
-        android:id="@+id/map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".activities.main.MainActivity" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="10dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TSP Algorithm" />
 
-    <androidx.appcompat.widget.LinearLayoutCompat
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/algorithm_spinner"/>
+    </LinearLayout>
+
+    <FrameLayout
         android:id="@+id/linearLayout"
-        android:layout_gravity="end"
         android:orientation="vertical"
-        android:gravity="bottom|end"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <com.nambimobile.widgets.efab.ExpandableFabLayout
-            android:id="@+id/expandable_fab_layout"
+        <fragment
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="bottom|end">
+            tools:context=".activities.main.MainActivity" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:gravity="bottom|end"
+            android:layout_gravity="end"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <com.nambimobile.widgets.efab.ExpandableFabLayout
+                android:id="@+id/expandable_fab_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="bottom|end">
+                <com.nambimobile.widgets.efab.ExpandableFab
+                    android:id="@+id/fab_edit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:layout_margin="16dp"
+                    app:efab_color="#9374DE"
+                    app:efab_icon="@drawable/ic_baseline_edit_location_24" />
 
-            <com.nambimobile.widgets.efab.ExpandableFab
-                android:id="@+id/fab_edit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
-                android:layout_margin="16dp"
-                app:efab_color="#9374DE"
-                app:efab_icon="@drawable/ic_baseline_edit_location_24" />
+                <com.nambimobile.widgets.efab.FabOption
+                    android:id="@+id/fab_add_node"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:fab_color="#0073FF"
+                    app:fab_icon="@drawable/ic_baseline_add_location_alt_24"
+                    app:label_backgroundColor="#808080"
+                    app:label_text="Add Node"
+                    app:label_textColor="#FFC0CB" />
+                <com.nambimobile.widgets.efab.FabOption
+                    android:id="@+id/fab_add_start"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:fab_color="#4CAF50"
+                    app:fab_icon="@drawable/ic_baseline_add_location_alt_24"
+                    app:label_backgroundColor="#808080"
+                    app:label_text="Add Start"
+                    app:label_textColor="#FFC0CB" />
+                <com.nambimobile.widgets.efab.FabOption
+                    android:id="@+id/fab_remove"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:fab_color="#F44336"
+                    app:fab_icon="@drawable/ic_baseline_wrong_location_24"
+                    app:label_backgroundColor="#0000FF"
+                    app:label_text="Remove" />
+                <com.nambimobile.widgets.efab.FabOption
+                    android:id="@+id/fab_remove_all"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:fab_color="#F44336"
+                    app:fab_icon="@drawable/ic_baseline_wrong_location_24"
+                    app:label_backgroundColor="#0000FF"
+                    app:label_text="Remove All" />
 
-            <com.nambimobile.widgets.efab.FabOption
-                android:id="@+id/fab_add_node"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:fab_color="#0073FF"
-                app:fab_icon="@drawable/ic_baseline_add_location_alt_24"
-                app:label_backgroundColor="#808080"
-                app:label_text="Add Node"
-                app:label_textColor="#FFC0CB" />
-            <com.nambimobile.widgets.efab.FabOption
-                android:id="@+id/fab_add_start"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:fab_color="#4CAF50"
-                app:fab_icon="@drawable/ic_baseline_add_location_alt_24"
-                app:label_backgroundColor="#808080"
-                app:label_text="Add Start"
-                app:label_textColor="#FFC0CB" />
-            <com.nambimobile.widgets.efab.FabOption
-                android:id="@+id/fab_remove"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:fab_color="#F44336"
-                app:fab_icon="@drawable/ic_baseline_wrong_location_24"
-                app:label_backgroundColor="#0000FF"
-                app:label_text="Remove" />
-            <com.nambimobile.widgets.efab.FabOption
-                android:id="@+id/fab_remove_all"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:fab_color="#F44336"
-                app:fab_icon="@drawable/ic_baseline_wrong_location_24"
-                app:label_backgroundColor="#0000FF"
-                app:label_text="Remove All" />
+            </com.nambimobile.widgets.efab.ExpandableFabLayout>
 
-        </com.nambimobile.widgets.efab.ExpandableFabLayout>
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_continue"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:src="@drawable/ic_baseline_done_24" />
+        </LinearLayout>
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_continue"
-            android:layout_width="wrap_content"
-            android:layout_height="60dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            android:contentDescription="TODO"
-            android:src="@drawable/ic_baseline_done_24" />
-    </androidx.appcompat.widget.LinearLayoutCompat>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </FrameLayout>
+</LinearLayout>
 
 

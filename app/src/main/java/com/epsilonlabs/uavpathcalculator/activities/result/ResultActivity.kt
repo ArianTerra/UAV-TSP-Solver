@@ -14,11 +14,10 @@ import com.epsilonlabs.uavpathcalculator.database.entities.UavEntity
 import com.epsilonlabs.uavpathcalculator.databinding.ActivityResultBinding
 import com.epsilonlabs.uavpathcalculator.utils.AlertUtils
 import com.epsilonlabs.uavpathcalculator.utils.MarkerParcelable
-import com.epsilonlabs.uavpathcalculator.utils.tsp.ResultData
-import com.epsilonlabs.uavpathcalculator.utils.tsp.ScheduleCreator
+import com.epsilonlabs.uavpathcalculator.utils.schedule.ResultData
+import com.epsilonlabs.uavpathcalculator.utils.schedule.ScheduleCreator
 import com.epsilonlabs.uavpathcalculator.viewmodels.UavViewModel
 import com.epsilonlabs.uavpathcalculator.viewmodels.UavViewModelFactory
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.time.Duration
 import java.time.LocalTime
 
@@ -28,6 +27,7 @@ class ResultActivity : AppCompatActivity() {
         UavViewModelFactory((application as AppApplication).repository)
     }
     private var departureTime: LocalTime = LocalTime.of(1,0)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityResultBinding.inflate(layoutInflater)
@@ -99,7 +99,7 @@ class ResultActivity : AppCompatActivity() {
             departureTime,
             Duration.ofMinutes(timeMonitoring.toLong()),
             Duration.ofMinutes(timeCharging.toLong()),
-            100 //TODO
+            abrasSpeed
         ).schedule
     }
 

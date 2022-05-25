@@ -11,4 +11,7 @@
     <string name="start_point_name">DQ</string>
     <string name="point_name">MS</string>
     <string name="abras">ABRAS</string>
+
+    <string name="algorithm_nearest_neighbor">Nearest neighbor</string>
+    <string name="algorithm_branch_and_bound">Branch and bound</string>
 </resources>

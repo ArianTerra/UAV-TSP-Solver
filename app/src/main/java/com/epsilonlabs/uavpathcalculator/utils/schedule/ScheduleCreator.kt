@@ -1,4 +1,4 @@
-package com.epsilonlabs.uavpathcalculator.utils.tsp
+package com.epsilonlabs.uavpathcalculator.utils.schedule
 
 import android.util.Log
 import com.epsilonlabs.uavpathcalculator.database.entities.UavEntity
@@ -17,77 +17,6 @@ class ScheduleCreator(
     private val abrasSpeed: Int
 ) {
     val scheduleUAV: ArrayList<ResultData> = arrayListOf<ResultData>()
-    val scheduleABRAS: ArrayList<ResultData>
-        get() {
-            val arr = arrayListOf<ResultData>()
-
-            var firstPBR = true
-            val DH = path[0] //TODO add new type of marker for DH, for now it is DQ
-
-            for(point in scheduleUAV) {
-                //return var
-                val arrival: LocalTime
-                val departure: LocalTime
-                val timeSpent: Duration
-
-                if(point.isPBR) {
-                    if(firstPBR) {
-                        firstPBR = false
-                        arrival = point.arrivalTime!! - timeCharging + timeMonitoring
-                        //add new record to schedule before PBR1
-                        val departureDH = arrival - Duration.ofSeconds(
-                            (MapUtils.calculateDistance(DH, point.marker) / (abrasSpeed / 3.6)).roundToLong()
-                        )
-                        arr.add(ResultData(DH, false, "ABRAS", departureTimeStart, departureDH, Duration.ZERO, Duration.ZERO))
-                        //time spent at PBR1
-                        timeSpent = Duration.between(arrival, point.departureTime!!) + timeCharging
-                        departure = point.departureTime + timeCharging
-                    } else
-                    {
-                        arrival = arr[arr.size - 1].departureTime!! + Duration.ofSeconds(
-                                (MapUtils.calculateDistance(point.marker, arr[arr.size - 1].marker) /
-                                        (abrasSpeed / 3.6)).roundToLong())
-                        departure = point.departureTime!! + timeCharging
-                        timeSpent = Duration.between(arrival, departure)
-
-                    }
-                    arr.add(ResultData(point.marker, true, "ABRAS", arrival, departure, timeSpent, null))
-                }
-            }
-            //returning back to DH
-            if(arr.size > 0) {
-                val flightTimeToDH = Duration.ofSeconds(
-                    (MapUtils.calculateDistance(arr.last().marker, DH) / (abrasSpeed / 3.6)).roundToLong()
-                )
-                val arrival = arr.last().departureTime!! + flightTimeToDH
-                arr.add(ResultData(
-                    DH,
-                    false,
-                    "ABRAS",
-                    arrival,
-                    arrival,
-                    Duration.ZERO,
-                    Duration.ZERO
-                ))
-            }
-            return arr
-        }
-    val schedule: ArrayList<ResultData>
-        get() {
-            val result = arrayListOf<ResultData>()
-            val ABRAS = scheduleABRAS.filter { abras -> abras.isPBR }
-            var abrasIndex = 0
-            for (uav in scheduleUAV) {
-                result.add(uav)
-                if(uav.isPBR) {
-                    result.add(ABRAS[abrasIndex])
-                    abrasIndex++
-                }
-            }
-            return result
-        }
-    val hasPBR: Boolean = scheduleUAV.any { value -> value.isPBR }
-
     init {
         val start = ResultData(
             path[0],
@@ -138,6 +67,9 @@ class ScheduleCreator(
         val flightTime = calculateFlightTime(path[0], scheduleUAV.last().marker)
         val arrival = scheduleUAV.last().departureTime!! + flightTime
         val timeLeft = scheduleUAV.last().batteryTimeLeft!! - timeMonitoring - flightTime
+        if(timeLeft.isNegative) {
+            throw IllegalArgumentException("UAV cannot return to DQ from the last point ${scheduleUAV.last().marker.title}")
+        }
         val point = ResultData(
             path[0],
             false,
@@ -149,7 +81,83 @@ class ScheduleCreator(
         )
         scheduleUAV.add(point)
     }
-    fun calculateFlightTime(m0: MarkerParcelable, m1: MarkerParcelable) : Duration {
+    val scheduleABRAS: ArrayList<ResultData>
+        get() {
+            val arr = arrayListOf<ResultData>()
+
+            var firstPBR = true
+            val DH = path[0] //TODO add new type of marker for DH, for now it is DQ
+
+            for(point in scheduleUAV) {
+                //return var
+                val arrival: LocalTime
+                val departure: LocalTime
+                val timeSpent: Duration
+
+                if(point.isPBR) {
+                    if(firstPBR) {
+                        firstPBR = false
+                        arrival = point.arrivalTime!! - timeCharging + timeMonitoring
+                        //add new record to schedule before PBR1
+                        val departureDH = arrival - Duration.ofSeconds(
+                            (MapUtils.calculateDistance(DH, point.marker) / (abrasSpeed / 3.6)).roundToLong()
+                        )
+                        arr.add(ResultData(DH, false, "ABRAS", departureTimeStart, departureDH, Duration.ZERO, Duration.ZERO))
+                        //time spent at PBR1
+                        timeSpent = Duration.between(arrival, point.departureTime!!) + timeCharging
+                        departure = point.departureTime + timeCharging
+                    } else
+                    {
+                        arrival = arr[arr.size - 1].departureTime!! + Duration.ofSeconds(
+                                (MapUtils.calculateDistance(
+                                    point.marker,
+                                    arr[arr.size - 1].marker
+                                ) /
+                                        (abrasSpeed / 3.6)).roundToLong())
+                        departure = point.departureTime!! + timeCharging
+                        timeSpent = Duration.between(arrival, departure)
+
+                    }
+                    arr.add(ResultData(point.marker, true, "ABRAS", arrival, departure, timeSpent, null))
+                }
+            }
+            //returning back to DH
+            if(arr.size > 0) {
+                val flightTimeToDH = Duration.ofSeconds(
+                    (MapUtils.calculateDistance(arr.last().marker, DH) / (abrasSpeed / 3.6)).roundToLong()
+                )
+                val arrival = arr.last().departureTime!! + flightTimeToDH
+                arr.add(
+                    ResultData(
+                    DH,
+                    false,
+                    "ABRAS",
+                    arrival,
+                    arrival,
+                    Duration.ZERO,
+                    Duration.ZERO
+                )
+                )
+            }
+            return arr
+        }
+    val schedule: ArrayList<ResultData>
+        get() {
+            val result = arrayListOf<ResultData>()
+            val ABRAS = scheduleABRAS.filter { abras -> abras.isPBR }
+            var abrasIndex = 0
+            for (uav in scheduleUAV) {
+                result.add(uav)
+                if(uav.isPBR) {
+                    result.add(ABRAS[abrasIndex])
+                    abrasIndex++
+                }
+            }
+            return result
+        }
+    val hasPBR: Boolean = scheduleUAV.any { value -> value.isPBR }
+
+    private fun calculateFlightTime(m0: MarkerParcelable, m1: MarkerParcelable) : Duration {
         val distance = MapUtils.calculateDistance(m0, m1)
         val flightTime = Duration.ofSeconds( //3.6 is a divider for km/h to m/s
             (distance / (uav.speed!! / 3.6)).roundToLong()

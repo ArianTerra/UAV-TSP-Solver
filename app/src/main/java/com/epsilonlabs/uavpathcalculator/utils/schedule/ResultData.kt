@@ -1,8 +1,6 @@
-package com.epsilonlabs.uavpathcalculator.utils.tsp
+package com.epsilonlabs.uavpathcalculator.utils.schedule
 
-import com.epsilonlabs.uavpathcalculator.database.entities.UavEntity
 import com.epsilonlabs.uavpathcalculator.utils.MarkerParcelable
-import com.google.android.gms.maps.model.Marker
 import java.time.Duration
 import java.time.LocalTime
 

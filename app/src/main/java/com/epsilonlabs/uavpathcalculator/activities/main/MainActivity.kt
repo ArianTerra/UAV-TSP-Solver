@@ -3,6 +3,9 @@ package com.epsilonlabs.uavpathcalculator.activities.main
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import com.epsilonlabs.uavpathcalculator.R
 import com.epsilonlabs.uavpathcalculator.activities.result.ResultActivity
@@ -15,12 +18,13 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.epsilonlabs.uavpathcalculator.utils.MarkerParcelable
+import com.epsilonlabs.uavpathcalculator.utils.tsp.TspBranching
+import com.epsilonlabs.uavpathcalculator.utils.tsp.TspDynamicProgramming
+import com.epsilonlabs.uavpathcalculator.utils.tsp.TspNearestNeighbor
 
 /*
 * TODO
-*  Add button to clear all markers
 *  Add a text prompt to name a marker while creating
-*  Implement UAV time calculation
 *  Add settings
 *   - autonaming markers switch
 *  Show current editor state (adding/removing node)
@@ -72,6 +76,20 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
         binding.fabRemoveAll.setOnClickListener {
             removeAllNodesButtonEvent()
+        }
+        //fill spinner
+        val list = arrayListOf(
+            TspNearestNeighbor(),
+            //TspBranching(), //TODO
+            TspDynamicProgramming()
+        )
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, list)
+        binding.algorithmSpinner.adapter = adapter
+        binding.algorithmSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                canContinue = false
+            }
+            override fun onNothingSelected(p0: AdapterView<*>?) {}
         }
     }
 
@@ -133,10 +151,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         allMarkers.clear()
         startNode = null
         polylinePath?.remove()
+        canContinue = false
         AlertUtils.showShortToast(this, "All markers removed")
     }
 
     private fun addMarkerButtonsEvent(it: LatLng) {
+        canContinue = false
         when (editorState) {
             EditorState.ADD_START -> {
                 if (startNode == null) {
@@ -183,8 +203,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         val markers = allMarkers.mapTo(ArrayList<MarkerParcelable>()) {
             MarkerParcelable(it.title!!, it.position.latitude, it.position.longitude)
         }
-        val tsp = TSP(markers)
-        path = tsp.calculateNearestNeighbor()
+
+        val tsp = binding.algorithmSpinner.selectedItem as TSP
+        path = tsp.calculatePath(markers)
+        AlertUtils.showShortToast(this, "Path: ${TSP.calculatePathLength(path)} m.")
 
         val options = PolylineOptions()
             .width(25f)
@@ -200,6 +222,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 allMarkers.remove(marker)
                 marker.remove()
                 polylinePath?.remove()
+                canContinue = false
                 AlertUtils.showShortToast(this,"Marker deleted")
             }
             return true
