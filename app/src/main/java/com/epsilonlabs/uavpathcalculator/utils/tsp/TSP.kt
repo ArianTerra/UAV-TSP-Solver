@@ -2,13 +2,11 @@ package com.epsilonlabs.uavpathcalculator.utils.tsp
 
 import com.epsilonlabs.uavpathcalculator.utils.MapUtils
 import com.epsilonlabs.uavpathcalculator.utils.MarkerParcelable
-import com.epsilonlabs.uavpathcalculator.utils.copy
-import java.util.*
 import kotlin.collections.ArrayList
 
 /**
  * Solves Traveling Salesman Problem by creating a distance matrix
- * and using different algorithms (only one available now, TODO).
+ * and using different algorithms
  * First element in ArrayList<Marker> is the starting point.
  * @author Artem Serediuk
  */

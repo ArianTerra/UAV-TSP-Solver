@@ -18,7 +18,6 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.epsilonlabs.uavpathcalculator.utils.MarkerParcelable
-import com.epsilonlabs.uavpathcalculator.utils.tsp.TspBranching
 import com.epsilonlabs.uavpathcalculator.utils.tsp.TspDynamicProgramming
 import com.epsilonlabs.uavpathcalculator.utils.tsp.TspNearestNeighbor
 
@@ -79,9 +78,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         }
         //fill spinner
         val list = arrayListOf(
-            TspNearestNeighbor(),
+            TspDynamicProgramming(),
+            TspNearestNeighbor()
             //TspBranching(), //TODO
-            TspDynamicProgramming()
         )
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, list)
         binding.algorithmSpinner.adapter = adapter
@@ -182,6 +181,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                     }
                 }
             }
+            else -> {}
         }
         editorState = EditorState.DEFAULT
     }
@@ -223,6 +223,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 marker.remove()
                 polylinePath?.remove()
                 canContinue = false
+                editorState = EditorState.DEFAULT
                 AlertUtils.showShortToast(this,"Marker deleted")
             }
             return true
